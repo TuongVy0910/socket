@@ -1,0 +1,10 @@
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\bin\Debug\Server.exe.config
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\bin\Debug\Server.exe
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\bin\Debug\Server.pdb
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.csprojAssemblyReference.cache
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.SERVER.resources
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.Properties.Resources.resources
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.csproj.GenerateResource.cache
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.exe
+C:\Users\Thao\source\repos\WEATHER_FORECAST\Server\obj\Debug\Server.pdb
