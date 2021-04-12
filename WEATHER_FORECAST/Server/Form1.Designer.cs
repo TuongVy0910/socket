@@ -32,7 +32,7 @@
             this.svListen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.svMess = new System.Windows.Forms.ListBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.numClient = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // svListen
@@ -43,6 +43,7 @@
             this.svListen.TabIndex = 3;
             this.svListen.Text = "Listen";
             this.svListen.UseVisualStyleBackColor = true;
+            this.svListen.Click += new System.EventHandler(this.svListen_Click);
             // 
             // label1
             // 
@@ -63,19 +64,19 @@
             this.svMess.Size = new System.Drawing.Size(500, 277);
             this.svMess.TabIndex = 6;
             // 
-            // textBox1
+            // numClient
             // 
-            this.textBox1.Location = new System.Drawing.Point(198, 322);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(154, 20);
-            this.textBox1.TabIndex = 7;
+            this.numClient.Location = new System.Drawing.Point(198, 322);
+            this.numClient.Name = "numClient";
+            this.numClient.Size = new System.Drawing.Size(154, 20);
+            this.numClient.TabIndex = 7;
             // 
             // SERVER
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(555, 368);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.numClient);
             this.Controls.Add(this.svMess);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.svListen);
@@ -93,7 +94,7 @@
         private System.Windows.Forms.Button svListen;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListBox svMess;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox numClient;
     }
 }
 
