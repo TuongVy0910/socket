@@ -1,9 +1,10 @@
-create database DBTT
-use DBTT 
+create database WEATHER_FORECAST
+use WEATHER_FORECAST 
 
 CREATE TABLE ACCOUNT (
 		_username char(20),
-		_password char(20)
+		_password char(20),
+		_type int
 		primary key (_username)
 )
 
@@ -30,8 +31,8 @@ REFERENCES CITY(_ID)
 
 INSERT ACCOUNT
 VALUES
-	('yioccho','12345'),
-	('miludehuong','11111')
+	('yioccho','12345',0),
+	('miludehuong','11111',1)
 
 INSERT CITY
 VALUES
