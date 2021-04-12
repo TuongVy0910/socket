@@ -22,7 +22,7 @@ namespace Server
         {
             InitializeComponent();
            // CheckForIllegalCrossThreadCalls = false;
-            //Connect();
+            Connect();
             
         }
         IPEndPoint ipe;
@@ -53,46 +53,45 @@ namespace Server
         {
             server.Close();
         }
-
+        
         private void SERVER_Load(object sender, EventArgs e)
         {
-            GetIP();
+           
 
-            xuliClient = new Thread(new ThreadStart(listen));
-            xuliClient.IsBackground = true;
-            xuliClient.Start();
+           
         }
+        /*
         public void listen()
         {
-            richTextBox1.Text = "bat dau\n";
+            AddMessage("bat dau\n");
 
             server.Bind(ipe);
-            richTextBox1.Text += "tao bind\n";
+            svMess.Text += "tao bind\n";
 
             server.Listen(10);
-            richTextBox1.Text += ipe.ToString();
-            richTextBox1.Text += server.ToString();
+            svMess.Text += ipe.ToString();
+            svMess.Text += server.ToString();
 
             while (true)
             {
                 Socket sk= server.Accept();
-                richTextBox1.Text +="sau khi accept\n";
+                svMess.Text +="sau khi accept\n";
 
                 clientList.Add(sk);
                 Thread clientProcess = new Thread(myThreadClient);
                 clientProcess.IsBackground = true;
                 clientProcess.Start(sk);
-                clientProcess.Join();
-                richTextBox1.Text += "chayy toi day r ne";
+                
+                svMess.Text += "chayy toi day r ne";
                 //string s = "connected!";
                 //AddMessage(s);
-                richTextBox1.Text+= "connected";
+                svMess.Text+= "connected";
             }
         }
         public void myThreadClient(object obj)
         {
-            richTextBox1.Text += "chayy toi mythreadclient";
-            richTextBox1.Text += g_count.ToString();
+            svMess.Text += "chayy toi mythreadclient";
+            svMess.Text += g_count.ToString();
             g_count++; 
 
            Socket clientSK = (Socket)obj;
@@ -106,99 +105,96 @@ namespace Server
             //    }
             //}
         }
-        //void AddMessage(string mes)
-        //{
-        //    lsvMess.Items.Add(new ListViewItem() { Text = mes });
-
-        //}
-
-        private void lsvMess_KeyPress(object sender, KeyPressEventArgs e)
+        */
+        void AddMessage(string mes)
         {
-            e.Handled = true;
+            svMess.Items.Add(mes);
+
         }
 
 
-        /*
-void Connect()
-{
-ipe = new IPEndPoint(IPAddress.Parse("172.16.1.48"), 62000);
-clientList = new List<Socket>();
-server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-server.Bind(ipe);
-//server.Listen(100);
-//Socket client = server.Accept();
-//AddMessage("Client connected!");
 
 
-Thread Listen = new Thread(() => {
-try
-{
-  while (true)
-  {
-      server.Listen(100);
-      Socket client = server.Accept();
-      clientList.Add(client);
-      Thread recieve = new Thread(Recieve);
-      recieve.IsBackground = true;
-      recieve.Start(client);
-      AddMessage("Client connected!");
-  }
-}
-catch
-{
-  ipe = new IPEndPoint(IPAddress.Parse("172.16.1.48"), 62000);
-  server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-}
-});
-Listen.IsBackground = true;
-Listen.Start();
 
-}
+
+        
+    void Connect()
+    {
+                GetIP();
+    //ipe = new IPEndPoint(IPAddress.Parse("172.16.1.48"), 62000);
+    clientList = new List<Socket>();
+    //server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+    server.Bind(ipe);
+    //server.Listen(100);
+    //Socket client = server.Accept();
+    //AddMessage("Client connected!");
+
+
+    Thread Listen = new Thread(() => {
+    try
+    {
+      while (true)
+      {
+          server.Listen(100);
+          Socket client = server.Accept();
+          clientList.Add(client);
+          Thread recieve = new Thread(Recieve());
+          recieve.IsBackground = true;
+          recieve.Start(client);
+          AddMessage("Client connected!");
+      }
+    }
+    catch
+    {
+            GetIP();
+    }
+    });
+    Listen.IsBackground = true;
+    Listen.Start();
+
+    }
 //void Send(Socket client )
 //{
 
 //}
 
-void Recieve(object obj)
-{
-Socket client = obj as Socket;
+        string Recieve(object obj)
+        {
+        Socket client = obj as Socket;
 
-try
-{
-while (true)
-{
-  byte[] recv = new byte[1024 * 4000];
-  client.Receive(recv);
-  string mes = (string)Deserialize(recv);
-  AddMessage(mes);
-}
-}
-catch
-{
-clientList.Remove(client);
-client.Close();
-}
+        try
+        {
+        while (true)
+        {
+          byte[] recv = new byte[1024 * 4000];
+          client.Receive(recv);
+          string mes = (string)Deserialize(recv);
+          AddMessage(mes);
+                    return mes;
+        }
+        }
+        catch
+        {
+        clientList.Remove(client);
+        client.Close();
+                return "exists";
+        }
 
-}
-byte[] Serialize(object obj)
-{
-MemoryStream stream = new MemoryStream();
-BinaryFormatter formatter = new BinaryFormatter();
-formatter.Serialize(stream, obj);
-return stream.ToArray();
-}
-object Deserialize(byte[] data)
-{
-MemoryStream stream = new MemoryStream();
-BinaryFormatter formatter = new BinaryFormatter();
+        }
+        byte[] Serialize(object obj)
+        {
+        MemoryStream stream = new MemoryStream();
+        BinaryFormatter formatter = new BinaryFormatter();
+        formatter.Serialize(stream, obj);
+        return stream.ToArray();
+        }
+        object Deserialize(byte[] data)
+        {
+        MemoryStream stream = new MemoryStream();
+        BinaryFormatter formatter = new BinaryFormatter();
 
-return formatter.Deserialize(stream);
+        return formatter.Deserialize(stream);
 
-}
-
-
-
-*/
-
-    }
+        }
+            }
 }

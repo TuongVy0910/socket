@@ -30,32 +30,54 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SERVER));
             this.svListen = new System.Windows.Forms.Button();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.svMess = new System.Windows.Forms.ListBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // svListen
             // 
-            this.svListen.Location = new System.Drawing.Point(432, 331);
+            this.svListen.Location = new System.Drawing.Point(428, 319);
             this.svListen.Name = "svListen";
             this.svListen.Size = new System.Drawing.Size(100, 25);
             this.svListen.TabIndex = 3;
             this.svListen.Text = "Listen";
             this.svListen.UseVisualStyleBackColor = true;
             // 
-            // richTextBox1
+            // label1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 12);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(468, 290);
-            this.richTextBox1.TabIndex = 4;
-            this.richTextBox1.Text = "";
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Modern No. 20", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label1.Location = new System.Drawing.Point(25, 325);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(167, 14);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Number of clients can connect";
+            // 
+            // svMess
+            // 
+            this.svMess.FormattingEnabled = true;
+            this.svMess.Location = new System.Drawing.Point(28, 21);
+            this.svMess.Name = "svMess";
+            this.svMess.Size = new System.Drawing.Size(500, 277);
+            this.svMess.TabIndex = 6;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(198, 322);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(154, 20);
+            this.textBox1.TabIndex = 7;
             // 
             // SERVER
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(555, 368);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.svMess);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.svListen);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SERVER";
@@ -63,12 +85,15 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SERVER_FormClosed);
             this.Load += new System.EventHandler(this.SERVER_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.Button svListen;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ListBox svMess;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
