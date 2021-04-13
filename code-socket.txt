@@ -62,18 +62,18 @@ SEND
 //thêm city
 6|id|city name
 //thêm info cho city
-7|id|(string info city theo format của bảng city_info có phân tách theo |)
+7|id|(string info city theo format của bảng city_info có phân tách theo ,)
 //thêm info 7 ngày
-8|id|(string info city theo format của bảng city_info có phân tách theo |) ngày +1 | ngày +2.....
+8|id|(string info city theo format của bảng city_info có phân tách theo ,) ngày +1 | ngày +2.....
 
 
 xử lý chuối
 split theo |
-1 bool checklogin(SELECT COUNT) ->STRING LENGT,NULL V.Vsame user same pass -> false tb không đúng user or pass-> true "0|truy cập xem dbtt" or "1|truy cập xem dbtt|"
+1 bool checklogin(SELECT COUNT) ->STRING LENGT,NULL V.Vsame user same pass -> false tb không đúng user or pass-> true "0" or false "1" 
      -> hiển thị form client
 	->hiển thị form ad
-2 bool checkSignup not user->false acc đã có sẵn -> true void signup  insert vào account -> truy cập xem dbtt
-3 client.close
+2 bool checkSignup not user->false acc đã có sẵn -> true void signup  insert vào account -> truy cập xem dbtt->"1" or "0"//sign up khong thanh cong
+3 client.close 
 4 query table city& city_info -> where date_city=date -> chuyển về 1 chuối string phân cách theo |
 5 check city id ->false city k hợp lệ ->true select * from city_info join city where city_id=id 
 6,7,8 check tồn tại tp hay chưa->insert
