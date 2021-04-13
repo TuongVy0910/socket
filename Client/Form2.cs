@@ -68,6 +68,15 @@ namespace Client
         {
             // gui id pw den server
             // nhan ket qua cua server
+
+            string s1 = textBox_user.Text;
+            string s2 = textBox_password.Text;
+            byte[] msg = Encoding.UTF8.GetBytes(1.ToString() + "|" + s1 + "|" + s2);
+            byte[] bytes = new byte[256];
+            string reply = "";
+
+
+            /*
             if (SendReceiveAccount(1))          // dang nhap thanh cong
             {
                 string message = "Welcom !";
@@ -79,6 +88,14 @@ namespace Client
                 string message = "Username or Password wrong !";
                 label_warn.Text = message;
             }
+            */
+
+            int i = client.Send(msg);
+
+            // Get reply from the server.
+            i = client.Receive(bytes);
+            reply = (Encoding.UTF8.GetString(bytes));
+
         }
 
         public bool SendReceiveAccount(int x)
