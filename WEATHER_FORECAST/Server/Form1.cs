@@ -114,142 +114,7 @@ namespace Server
 
         }
        //private SqlConnection con;
-        void connectSQL(SqlConnection con)
-        {
-            String conString = @"Data Source=MAYCHU\SQLEXPRESS;Initial Catalog=WEATHER_FORECAST;Integrated Security=True";
-            try
-            {
-                SqlConnection conn = new SqlConnection(conString);
-                // con.Open();
-                con = conn;
-                MessageBox.Show("Kết nối SQL thành công","Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch
-            {
-                MessageBox.Show("Không Kết nối tới CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            
-        }
-
-        //error:Username or password is not correct!You can create new account.
-        bool checkLogIn(string user,string pw,string type)
-        {
-            SqlConnection con = new SqlConnection();
-            connectSQL(con);
-            con.Open();
-            try
-            {
-                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user + "' AND _password = '" + pw + "' AND _type = " + type;
-                // Tạo một đối tượng Command.
-                SqlCommand cmd = new SqlCommand();
-
-                // Liên hợp Command với Connection.
-                cmd.Connection = con;
-                cmd.CommandText = sql;
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        // Đóng kết nối.
-                        con.Close();
-                        // Hủy đối tượng, giải phóng tài nguyên.
-                        con.Dispose();
-                        return true;
-                    }
-
-                    else
-                    {
-                        // Đóng kết nối.
-                        con.Close();
-                        // Hủy đối tượng, giải phóng tài nguyên.
-                        con.Dispose();
-                        return false;
-                    }
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-           
-        }
-        bool checkSignUp(string user, string pw)
-        {
-            SqlConnection con = new SqlConnection();
-            connectSQL(con);
-            con.Open();
-            try
-            {
-                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user ;
-                // Tạo một đối tượng Command.
-                SqlCommand cmd = new SqlCommand();
-
-                // Liên hợp Command với Connection.
-                cmd.Connection = con;
-                cmd.CommandText = sql;
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        // Đóng kết nối.
-                        con.Close();
-                        // Hủy đối tượng, giải phóng tài nguyên.
-                        con.Dispose();
-                        return true;
-                    }
-                       
-                    else
-                    {
-                        // Đóng kết nối.
-                        con.Close();
-                        // Hủy đối tượng, giải phóng tài nguyên.
-                        con.Dispose();
-                        return false;
-                    }
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-          
-        }
-
-        void SignUpClient(string user, string pw)
-        {
-            SqlConnection con = new SqlConnection();
-            connectSQL(con);
-            con.Open();
-            try
-            {
-                
-                string sql = "insert into ACCOUNT values (@username,@password,@type)";
-                // Tạo một đối tượng Command.
-                SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@username", user);
-                cmd.Parameters.AddWithValue("@password", pw);
-                cmd.Parameters.AddWithValue("@type", 0);
-                cmd.CommandType = CommandType.Text;
-                int i = cmd.ExecuteNonQuery();
-                con.Close();
-                AddMessage(i + " Row(s) Inserted ");
-            }
-            catch
-            {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-            }
-            finally
-            {
-                // Đóng kết nối.
-                con.Close();
-                // Hủy đối tượng, giải phóng tài nguyên.
-                con.Dispose();
-            }
-
-        }
+        
 
 
         void Connect(int n)
@@ -318,6 +183,191 @@ namespace Server
         }
 
         }
+
+        void connectSQL(SqlConnection con)
+        {
+            String conString = @"Data Source=MAYCHU\SQLEXPRESS;Initial Catalog=WEATHER_FORECAST;Integrated Security=True";
+            try
+            {
+                SqlConnection conn = new SqlConnection(conString);
+                // con.Open();
+                con = conn;
+                MessageBox.Show("Kết nối SQL thành công", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                MessageBox.Show("Không Kết nối tới CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        //error:Username or password is not correct!You can create new account.
+        bool checkLogIn(string user, string pw, string type)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user + "' AND _password = '" + pw + "' AND _type = " + type;
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return true;
+                    }
+
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+        }
+        bool checkSignUp(string user, string pw)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user;
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return true;
+                    }
+
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+        }
+
+        void SignUpClient(string user, string pw)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+
+                string sql = "insert into ACCOUNT values (@username,@password,@type)";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@username", user);
+                cmd.Parameters.AddWithValue("@password", pw);
+                cmd.Parameters.AddWithValue("@type", 0);
+                cmd.CommandType = CommandType.Text;
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                AddMessage(i + " Row(s) Inserted ");
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+
+        }
+
+        void Disconnect(ref Socket client)
+        {
+            clientList.Remove(client);
+            client.Close();
+        }
+        //string list_all(string date)
+        //{
+        //    SqlConnection con = new SqlConnection();
+        //    connectSQL(con);
+        //    con.Open();
+        //    string result = "";
+        //    try
+        //    {
+        //        string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
+        //            + @date +@"'";
+        //        // Tạo một đối tượng Command.
+        //        SqlCommand cmd = new SqlCommand();
+
+        //        // Liên hợp Command với Connection.
+        //        cmd.Connection = con;
+        //        cmd.CommandText = sql;
+        //        using (DbDataReader reader = cmd.ExecuteReader())
+        //        {
+        //            if (reader.HasRows)
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    result += reader.GetString("_ID");
+        //                }
+        //            }
+
+                    
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+        //    }
+        //    finally
+        //    {
+        //        // Đóng kết nối.
+        //        con.Close();
+        //        // Hủy đối tượng, giải phóng tài nguyên.
+        //        con.Dispose();
+        //    }
+        //}
         byte[] Serialize(object obj)
         {
         MemoryStream stream = new MemoryStream();
