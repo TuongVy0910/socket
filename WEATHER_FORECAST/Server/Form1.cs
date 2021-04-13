@@ -167,13 +167,7 @@ namespace Server
             }
         }
 
-
-
-
-
-
-        
-    void Connect(int n)
+        void Connect(int n)
     {
                 GetIP();
     //ipe = new IPEndPoint(IPAddress.Parse("172.16.1.48"), 62000);
