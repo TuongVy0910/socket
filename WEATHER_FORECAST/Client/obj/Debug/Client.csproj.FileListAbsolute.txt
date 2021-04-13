@@ -8,3 +8,13 @@ C:\Users\Thao\source\repos\WEATHER_FORECAST\Client\obj\Debug\Client.csproj.Gener
 C:\Users\Thao\source\repos\WEATHER_FORECAST\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
 C:\Users\Thao\source\repos\WEATHER_FORECAST\Client\obj\Debug\Client.exe
 C:\Users\Thao\source\repos\WEATHER_FORECAST\Client\obj\Debug\Client.pdb
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\bin\Debug\Client.exe.config
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\bin\Debug\Client.exe
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\bin\Debug\Client.pdb
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.csprojAssemblyReference.cache
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.Form1.resources
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.exe
+C:\Users\Thao\Documents\GitHub\socket\WEATHER_FORECAST\Client\obj\Debug\Client.pdb

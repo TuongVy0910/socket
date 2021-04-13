@@ -149,14 +149,93 @@ namespace Server
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
                         return true;
-                    else return false;
+                    }
+
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
                 }
             }
             catch
             {
                 MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
+            }
+           
+        }
+        bool checkSignUp(string user, string pw)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user ;
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return true;
+                    }
+                       
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+          
+        }
+
+        void SignUpClient(string user, string pw)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+                
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user;
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@username", t_username.Text);
+                cmd.Parameters.AddWithValue("@password", t_password.Text);
+
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
             }
             finally
             {
@@ -165,6 +244,7 @@ namespace Server
                 // Hủy đối tượng, giải phóng tài nguyên.
                 con.Dispose();
             }
+
         }
 
         void Connect(int n)
@@ -219,9 +299,9 @@ namespace Server
           client.Receive(recv);
           string mes = (string)Deserialize(recv);
                     AddMessage(mes);
-                    string mes1="";          //xử lí mes
+                    string mes1="hello";          //xử lí mes
           Send(client, mes1);
-                    AddMessage(mes1);
+          AddMessage(mes1);
                     //return mes;
                 }
         }
@@ -242,7 +322,7 @@ namespace Server
         }
         object Deserialize(byte[] data)
         {
-        MemoryStream stream = new MemoryStream();
+        MemoryStream stream = new MemoryStream(data);
         BinaryFormatter formatter = new BinaryFormatter();
 
         return formatter.Deserialize(stream);
