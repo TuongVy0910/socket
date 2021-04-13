@@ -225,12 +225,16 @@ namespace Server
             try
             {
                 
-                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user;
+                string sql = "insert into ACCOUNT values (@username,@password,@type)";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@username", t_username.Text);
-                cmd.Parameters.AddWithValue("@password", t_password.Text);
-
+                cmd.Parameters.AddWithValue("@username", user);
+                cmd.Parameters.AddWithValue("@password", pw);
+                cmd.Parameters.AddWithValue("@type", 0);
+                cmd.CommandType = CommandType.Text;
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                AddMessage(i + " Row(s) Inserted ");
             }
             catch
             {
@@ -246,6 +250,7 @@ namespace Server
             }
 
         }
+
 
         void Connect(int n)
     {
