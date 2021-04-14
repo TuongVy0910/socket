@@ -326,39 +326,223 @@ namespace Server
             clientList.Remove(client);
             client.Close();
         }
-        //string list_all(string date)
+        string list_all(string date)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            string result = "";
+            try
+            {
+                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
+                    + @date + @"'";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+
+
+                            string ID = reader["_ID"].ToString();
+                            string name = reader["_NAME"].ToString();
+                            string d = reader["WEATHER_DATE"].ToString();
+                            string temperature = reader["TEMPERATURE"].ToString();
+                            string wind = reader["WIND"].ToString();
+                            string pressure = reader["PRESSURE"].ToString();
+                            result += ID + "," + name + "," + d + "," + temperature + "," + wind + "," + pressure + "|";
+                        }
+                    }
+                }
+                
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result += "ERROR";
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+            return result;
+        }
+
+        string queryCity(string id,string name)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            string result = "";
+            try
+            {
+                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = '"
+                    + @id + @"' and C._NAME = '" + @name + @"'";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string ID = reader["_ID"].ToString();
+                            string CityName = reader["_NAME"].ToString();
+                            string d = reader["WEATHER_DATE"].ToString();
+                            string temperature = reader["TEMPERATURE"].ToString();
+                            string wind = reader["WIND"].ToString();
+                            string pressure = reader["PRESSURE"].ToString();
+                            result += ID + "," + CityName + "," + d + "," + temperature + "," + wind + "," + pressure + "|";
+                        }
+                    }
+                }
+
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result += "ERROR";
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+            return result;
+        }
+        bool checkCityID(string id,string name)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+                string sql = @"SELECT * FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = '"
+                    + @id + @"' and C._NAME = '" + @name + @"'";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
+
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return true;
+                    }
+
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        void AddCity(string id, string name)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+
+                string sql = "insert into CITY values (@ID,@CityName,@type)";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@ID", id);
+                cmd.Parameters.AddWithValue("@CityName", name);
+               
+                cmd.CommandType = CommandType.Text;
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                AddMessage(i + " Row(s) Inserted ");
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+
+        }
+
+        //void AddCurrentWeather(string row, int i)
         //{
+
+        //    string[] info= { "" };
+        //    int j=0;
+        //    string[] split = row.Split(',');
+        //    foreach (string s in split)
+        //    {
+
+        //        if (s.Trim() != "") {
+                
+        //            info[j] = s;
+        //            j++;
+        //        }
+                    
+
+        //    }
         //    SqlConnection con = new SqlConnection();
         //    connectSQL(con);
         //    con.Open();
-        //    string result = "";
         //    try
         //    {
-        //        string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
-        //            + @date +@"'";
+
+        //        string sql = "insert into CITY_INFO values (@ID,@date,@temper,@wind,@pressure)";
         //        // Tạo một đối tượng Command.
-        //        SqlCommand cmd = new SqlCommand();
+        //        SqlCommand cmd = new SqlCommand(sql, con);
+        //        cmd.Parameters.AddWithValue("@ID", info[0]);
+        //        cmd.Parameters.AddWithValue("@date","getdate()"+ i.ToString());
+        //        cmd.Parameters.AddWithValue("@temper",info[1].flo );
+        //        cmd.Parameters.AddWithValue("@wind",wind );
+        //        cmd.Parameters.AddWithValue("@pressure",pressure );
 
-        //        // Liên hợp Command với Connection.
-        //        cmd.Connection = con;
-        //        cmd.CommandText = sql;
-        //        using (DbDataReader reader = cmd.ExecuteReader())
-        //        {
-        //            if (reader.HasRows)
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    result += reader.GetString("_ID");
-        //                }
-        //            }
-
-                    
-        //        }
+        //        cmd.CommandType = CommandType.Text;
+        //        int rowUp = cmd.ExecuteNonQuery();
+        //        con.Close();
+        //        AddMessage(rowUp + " Row(s) Inserted ");
         //    }
         //    catch
         //    {
         //        MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+
         //    }
         //    finally
         //    {
@@ -367,7 +551,11 @@ namespace Server
         //        // Hủy đối tượng, giải phóng tài nguyên.
         //        con.Dispose();
         //    }
+
         //}
+
+
+
         byte[] Serialize(object obj)
         {
         MemoryStream stream = new MemoryStream();
