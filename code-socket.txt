@@ -1,35 +1,14 @@
+or table to show info (if possible)
 richTextBox1: chat message
 textBox1: send box
-button2: exit
-button1: send
-label1: username
-label4: port
-label3: server's ip
+button2: exit // done
+button1: send 
+label1: username // done
+label4: port // done
+label3: server's ip // done
 
 
 // giai quyet connect sai server -> check xem co tin nhan phan hoi tu server
-
-MESSAGE BOX: notify action status to client
-	string message = "Fail to connect to server !\nPlease retry.";  
-	string title = "Message Box";  
-	MessageBox.Show(message, title); 
-
-	string message = "User name or password is wrong !\nPlease retry.";  
-	string title = "Message Box";  
-	MessageBox.Show(message, title); 
-
-CONNECT
-
-
-DISCONNECT
-
-SEND
-
-// initialize socket
-
-// connect to server (ip, port)
-
-// register / log in
 
 // [user] query
 	query struture model
