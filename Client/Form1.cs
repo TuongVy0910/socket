@@ -20,7 +20,8 @@ namespace Client
     {
         //public static Socket client;
 
-        
+
+        public Socket client = null;
 
         public Form1()
         {
@@ -45,7 +46,6 @@ namespace Client
 
         IPEndPoint ipe;
         //Thread ketnoi;
-        public Socket client = null;
 
 
         public Socket getSocket()

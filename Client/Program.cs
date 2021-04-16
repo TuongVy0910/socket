@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Threading;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Data.SqlClient;
+using System.Data.Common;
 
 namespace Client
 {
@@ -17,45 +24,69 @@ namespace Client
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
+        
         static void Main()
         {
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            
             // connect toi server
             Form2 form2 = new Form2();
 
             Application.Run(form2);
-            if (form2.getAdmin() == false)
+
+            if (form2.cancel == false)
             {
-                Form4 form4 = new Form4();
-                form4.setSocket(form2.getSocket(), form2.getIPAddress(), form2.getPort(), form2.getUser());
-                form4.ShowDialog();
+                if (form2.getAdmin() == false)
+                {
+                    Form4 form4 = new Form4();
+                    form4.setSocket(form2.getSocket(), form2.getIPAddress(), form2.getPort(), form2.getUser());
+                    form4.ShowDialog();
+                }
+                else
+                {
+                    Form5 form5 = new Form5();
+                    form5.setSocket(form2.getSocket(), form2.getIPAddress(), form2.getPort(), form2.getUser());
+                    form5.ShowDialog();
+                }
             }
-            else
-            {
-                Form5 form5 = new Form5();
-                form5.setSocket(form2.getSocket(), form2.getIPAddress(), form2.getPort(), form2.getUser());
-                form5.ShowDialog();
-            }
-                
+
             
-            // dang nhap
-
-            // client / admin
-
-            // truy van toi server
-
-            // ket thuc chuong trinh
         }
+
+
     }
+
 
 
     public partial class Client : Form
     {
+
+
         public Client()
         {
-                
+
+
+
+
+        }
+
+        public void Send(int x, ref Socket client)
+        {
+
+            client.Send(Serialize(x.ToString() + "|" + "Yi" + "|" + "123"));
+
+        }
+
+        public byte[] Serialize(object obj)
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            formatter.Serialize(stream, obj);
+
+            return stream.ToArray();
         }
     }
 }

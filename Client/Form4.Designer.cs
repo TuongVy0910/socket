@@ -35,6 +35,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.textBox_queryStruct = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textBox1
@@ -102,11 +103,21 @@
             this.richTextBox1.TabIndex = 11;
             this.richTextBox1.Text = "";
             // 
+            // textBox_queryStruct
+            // 
+            this.textBox_queryStruct.Location = new System.Drawing.Point(806, 23);
+            this.textBox_queryStruct.Multiline = true;
+            this.textBox_queryStruct.Name = "textBox_queryStruct";
+            this.textBox_queryStruct.ReadOnly = true;
+            this.textBox_queryStruct.Size = new System.Drawing.Size(388, 464);
+            this.textBox_queryStruct.TabIndex = 12;
+            // 
             // Form4
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1002, 518);
+            this.ClientSize = new System.Drawing.Size(1220, 518);
+            this.Controls.Add(this.textBox_queryStruct);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button2);
@@ -131,5 +142,6 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.TextBox textBox_queryStruct;
     }
 }

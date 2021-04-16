@@ -10,20 +10,26 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Data.SqlClient;
+using System.Data.Common;
 
 namespace Client
 {
     public partial class Form2 : Form
     {
+        public Socket client = null;
+
         public Form2()
         {
             InitializeComponent();
         }
 
-        public Socket client = null;
         public string serverIP = "";
         public string port = "";
         public bool b_admin = false;
+        public bool cancel = false;
 
         public string getIPAddress()
         {
@@ -55,6 +61,7 @@ namespace Client
                 this.Close();
 
             serverIP = form1.getIPAddress();
+            port = form1.getPort();
             label_ip.Text = "Server's IP: " + serverIP;
             label_port.Text = "Port: " + port;
         }
@@ -67,75 +74,79 @@ namespace Client
         private void button_ok_Click(object sender, EventArgs e) // client button
         {
             // gui id pw den server
-            // nhan ket qua cua server
+            Send(1, "|" + textBox_user.Text + "|" + textBox_password.Text);
 
-            string s1 = textBox_user.Text;
-            string s2 = textBox_password.Text;
-            byte[] msg = Encoding.UTF8.GetBytes(1.ToString() + "|" + s1 + "|" + s2);
-            byte[] bytes = new byte[256];
-            string reply = "";
+            // receive
+            string ans = "";
+            ans = Receive();
 
-
-            /*
-            if (SendReceiveAccount(1))          // dang nhap thanh cong
+            if (ans.StartsWith("1"))          // dang nhap thanh cong
             {
-                string message = "Welcom !";
+                string message = "Welcome !";
                 string title = "Message Box";
                 MessageBox.Show(message, title);
+                this.Hide();
             }
-            else            // dang nhap that bai
+            else if (ans.StartsWith("0"))           // dang nhap that bai
             {
                 string message = "Username or Password wrong !";
                 label_warn.Text = message;
             }
-            */
-
-            int i = client.Send(msg);
-
-            // Get reply from the server.
-            i = client.Receive(bytes);
-            reply = (Encoding.UTF8.GetString(bytes));
-
+            else
+            {
+                string message = "Receive none !";
+                label_warn.Text = message;
+            }
         }
 
-        public bool SendReceiveAccount(int x)
+        string Receive()
         {
-            string s1 = textBox_user.Text;
-            string s2 = textBox_password.Text;
-            byte[] msg = Encoding.UTF8.GetBytes(x.ToString() + "|" + s1 + "|" + s2);
-            byte[] bytes = new byte[256];
-            string reply = "";
-
             try
             {
-                // Blocks until send returns.
-                int i = client.Send(msg);
+                //while(true)
+                //{
+                    byte[] data = new byte[1024 * 5000];
+                    client.Receive(data);
 
-                // Get reply from the server.
-                i = client.Receive(bytes);
-                reply = (Encoding.UTF8.GetString(bytes));
+                    string message = (string)Deserialize(data);
 
-                if (reply == "SUCCESS") // server response
-                    return true;
-                else
-                    return false;
+                    // adding
+
+                    return message;
+                //}
             }
-            catch (SocketException e)
+            catch
             {
-                //Console.WriteLine("{0} Error code: {1}.", e.Message, e.ErrorCode);
-                //return false;
+                // ???
+
             }
 
+            return "";
+        }
 
-            //byte[] buffer = new byte[1024];
-            //int iRx = soc.Receive(buffer);
-            //char[] chars = new char[iRx];
+        void Send(int x, string str)
+        {
+            
+            client.Send(Serialize(x.ToString() + str));
+        
+        }
 
-            //System.Text.Decoder d = System.Text.Encoding.UTF8.GetDecoder();
-            //int charLen = d.GetChars(buffer, 0, iRx, chars, 0);
-            //System.String recv = new System.String(chars);
+        object Deserialize(byte[] data)
+        {
+            MemoryStream stream = new MemoryStream(data);
+            BinaryFormatter formatter = new BinaryFormatter();
 
-            return false;
+            return formatter.Deserialize(stream);
+        }
+
+        byte[] Serialize(object obj)
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            formatter.Serialize(stream, obj);
+
+            return stream.ToArray();
         }
 
         private void checkBox_password_CheckedChanged(object sender, EventArgs e)
@@ -152,45 +163,85 @@ namespace Client
         }
 
         private void button_register_Click(object sender, EventArgs e)
-        { 
-            // gui id pw den server
-            // nhan ket qua cua server
-            if (SendReceiveAccount(2))          // dang ky thanh cong
-            {
-                string message = "Entered admin mode !";
-                string title = "Message Box";
-                MessageBox.Show(message, title);
-
-                b_admin = true;
-            }
-            else            // dang ky that bai
-            {
-                string message = "Username existed !";
-                label_warn.Text = message;
-            }
-            
-        }
-
-        private void textBox_user_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button_Admin_Click(object sender, EventArgs e)
         {
             // gui id pw den server
             // nhan ket qua cua server
-            if (SendReceiveAccount(0))          // dang nhap admin-mode thanh cong
+
+            Send(2, "|" + textBox_user.Text + "|" + textBox_password.Text);
+
+            // receive
+            string ans = "";
+            ans = Receive();
+
+            if (ans.StartsWith("1"))          // dang ky thanh cong
             {
                 string message = "Registered successfully !";
                 string title = "Message Box";
                 MessageBox.Show(message, title);
             }
-            else            // dang nhap that bai
+            else if (ans.StartsWith("0"))           // dang ky that bai
             {
-                string message = "Username or password wrong !";
+                string message = "Username existed !";
                 label_warn.Text = message;
             }
+            else
+            {
+                string message = "Receive none !";
+                label_warn.Text = message;
+            }
+        }
+
+        private void textBox_user_TextChanged(object sender, EventArgs e)
+        {
+            //if (textBox_user.Text == "" || textBox_password.Text == "")
+            //{
+            //    button_Admin.Enabled = false;
+            //    button_ok.Enabled = false;
+            //    button_register.Enabled = false;
+            //}
+            //else
+            //{
+            //    button_Admin.Enabled = true;
+            //    button_ok.Enabled = true;
+            //    button_register.Enabled = true;
+            //}
+        }
+
+        private void button_Admin_Click(object sender, EventArgs e)
+        {
+            Send(0, "|" + textBox_user.Text + "|" + textBox_password.Text);
+
+            // receive
+            string ans = "";
+            ans = Receive();
+
+            if (ans.StartsWith("1"))          // dang nhap thanh cong
+            {
+                string message = "Entered admin mode !";
+                string title = "Message Box";
+                MessageBox.Show(message, title);
+                b_admin = true;
+                this.Hide();
+            }
+            else if (ans.StartsWith("0"))           // dang nhap that bai
+            {
+                string message = "Username or Password wrong !";
+                label_warn.Text = message;
+            }
+            else
+            {
+                string message = "Receive none !";
+                label_warn.Text = message;
+            }
+        }
+
+        private void button_cancel_Click(object sender, EventArgs e)
+        {
+            // send close to server
+            Send(3, "|disconnect");
+            cancel = true;
+            client.Close();
+            this.Close();
         }
     }
 }
