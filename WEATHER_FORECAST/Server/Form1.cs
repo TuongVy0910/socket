@@ -60,9 +60,15 @@ namespace Server
         
         private void SERVER_Load(object sender, EventArgs e)
         {
-           
+            string mes = @"1|yioccho|12345";
+            AddMessage(mes);
+            string[] split = mes.Split('|');
+            foreach (string s in split)
+            {
+                AddMessage(s);
+            }
 
-           
+
         }
         void AddMessage(string mes)
         {
@@ -531,6 +537,7 @@ namespace Server
         string HandleClientRequest(string mes,Socket client,string name)
         {
             string[] split = mes.Split('|');
+            
             string request = "";
             switch (int.Parse(split[0]))
             {
