@@ -33,11 +33,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.svMess = new System.Windows.Forms.ListBox();
             this.numClient = new System.Windows.Forms.TextBox();
+            this.svClose = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // svListen
             // 
-            this.svListen.Location = new System.Drawing.Point(428, 319);
+            this.svListen.Location = new System.Drawing.Point(358, 319);
             this.svListen.Name = "svListen";
             this.svListen.Size = new System.Drawing.Size(100, 25);
             this.svListen.TabIndex = 3;
@@ -71,11 +72,22 @@
             this.numClient.Size = new System.Drawing.Size(154, 20);
             this.numClient.TabIndex = 7;
             // 
+            // svClose
+            // 
+            this.svClose.Location = new System.Drawing.Point(468, 319);
+            this.svClose.Name = "svClose";
+            this.svClose.Size = new System.Drawing.Size(75, 23);
+            this.svClose.TabIndex = 8;
+            this.svClose.Text = "Close";
+            this.svClose.UseVisualStyleBackColor = true;
+            this.svClose.Click += new System.EventHandler(this.svClose_Click);
+            // 
             // SERVER
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(555, 368);
+            this.Controls.Add(this.svClose);
             this.Controls.Add(this.numClient);
             this.Controls.Add(this.svMess);
             this.Controls.Add(this.label1);
@@ -95,6 +107,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListBox svMess;
         private System.Windows.Forms.TextBox numClient;
+        private System.Windows.Forms.Button svClose;
     }
 }
 

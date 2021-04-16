@@ -60,19 +60,33 @@ namespace Server
         
         private void SERVER_Load(object sender, EventArgs e)
         {
-            string mes = @"1|yioccho|12345";
-            AddMessage(mes);
-            string[] split = mes.Split('|');
-            foreach (string s in split)
-            {
-                AddMessage(s);
+            //string mes = @"1|yioccho|12345";
+            //AddMessage(mes);
+            //string[] split = mes.Split('|');
+            //foreach (string s in split)
+            //{
+            //    AddMessage(s);
+            //}
+
+            
+
+            //string request = "";
+           
+            //            if (checkLogIn(split[1], split[2], 0))
+            //            {
+
+            //                request = "1|Admin Log in successfully";
+            //            }
+            //            else
+            //                request = "0|Admin Log in unsuccessfully";
+            //AddMessage(request);
+
+
+                    
             }
-
-
-        }
         void AddMessage(string mes)
         {
-            svMess.Items.Add(mes + @"\n");
+            svMess.Items.Add(mes);
 
         }
        //private SqlConnection con;
@@ -152,7 +166,7 @@ namespace Server
 
         }
 
-        void connectSQL(SqlConnection con)
+        void connectSQL(ref SqlConnection con)
         {
             String conString = @"Data Source=MAYCHU\SQLEXPRESS;Initial Catalog=WEATHER_FORECAST;Integrated Security=True";
             try
@@ -170,20 +184,22 @@ namespace Server
         }
 
         //error:Username or password is not correct!You can create new account.
-        bool checkLogIn(string user, string pw, string type)
+        bool checkLogIn(string user, string pw, int type)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
-                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user + "' AND _password = '" + pw + "' AND _type = " + type;
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = @username and _password = @password and _type = @typeacc";
                 // Tạo một đối tượng Command.
-                SqlCommand cmd = new SqlCommand();
-
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@username", user);
+                cmd.Parameters.AddWithValue("@password", pw);
+                cmd.Parameters.Add("@typeacc", SqlDbType.Int).Value = type;
                 // Liên hợp Command với Connection.
-                cmd.Connection = con;
-                cmd.CommandText = sql;
+                //cmd.Connection = con;
+                //cmd.CommandText = sql;
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -215,17 +231,18 @@ namespace Server
         bool checkSignUp(string user, string pw)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
-                string sql = "SELECT * FROM ACCOUNT WHERE _username = '" + user;
+                string sql = "SELECT * FROM ACCOUNT WHERE _username = @user";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@user", user);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -258,7 +275,7 @@ namespace Server
         void SignUpClient(string user, string pw)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
@@ -298,19 +315,19 @@ namespace Server
         string list_all(string date)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             string result = "";
             try
             {
-                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
-                    + @date + @"'";
+                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE =  @date ";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
+                cmd.Parameters.Add("@date", SqlDbType.Date).Value = DateTime.Parse(date);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -349,19 +366,20 @@ namespace Server
         string queryCity(string id,string name)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             string result = "";
             try
             {
-                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = '"
-                    + @id + @"' and C._NAME = '" + @name + @"'";
+                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = @id and _NAME = @namecity";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@namecity", name);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -397,18 +415,19 @@ namespace Server
         bool checkCityID(string id)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
-                string sql = @"SELECT * FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = '"
-                    + @id + @"'";
+                string sql = @"SELECT * FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = @id ";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
+
+                cmd.Parameters.AddWithValue("@id", id);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -440,7 +459,7 @@ namespace Server
         void AddCity(string id, string name)
         {
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
@@ -490,7 +509,7 @@ namespace Server
 
             }
             SqlConnection con = new SqlConnection();
-            connectSQL(con);
+            connectSQL(ref con);
             con.Open();
             try
             {
@@ -543,7 +562,7 @@ namespace Server
             {
                 case 0:
                     {
-                        if (checkLogIn(split[1], split[2],"0"))
+                        if (checkLogIn(split[1], split[2],0))
                         {
                             name = split[1];
                             request = "1|Admin Log in successfully";
@@ -554,7 +573,7 @@ namespace Server
                     }
                 case 1:
                     {
-                        if (checkLogIn(split[1], split[2], "1"))
+                        if (checkLogIn(split[1], split[2], 1))
                         {
                             name = split[1];
                             request = "1|Client Log in successfully";
@@ -702,6 +721,16 @@ namespace Server
             int num = int.Parse(numClient.Text.ToString());
             Connect(num);
 
+        }
+
+        private void svClose_Click(object sender, EventArgs e)
+        {
+            foreach(Socket s in clientList)
+            {
+                Send(s, "Server disconnect!");
+            }
+            AddMessage("Server disconnect!");
+            close();
         }
     }
 }
