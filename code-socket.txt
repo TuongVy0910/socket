@@ -1,35 +1,14 @@
+or table to show info (if possible)
 richTextBox1: chat message
 textBox1: send box
-button2: exit
-button1: send
-label1: username
-label4: port
-label3: server's ip
+button2: exit // done
+button1: send 
+label1: username // done
+label4: port // done
+label3: server's ip // done
 
 
 // giai quyet connect sai server -> check xem co tin nhan phan hoi tu server
-
-MESSAGE BOX: notify action status to client
-	string message = "Fail to connect to server !\nPlease retry.";  
-	string title = "Message Box";  
-	MessageBox.Show(message, title); 
-
-	string message = "User name or password is wrong !\nPlease retry.";  
-	string title = "Message Box";  
-	MessageBox.Show(message, title); 
-
-CONNECT
-
-
-DISCONNECT
-
-SEND
-
-// initialize socket
-
-// connect to server (ip, port)
-
-// register / log in
 
 // [user] query
 	query struture model
@@ -74,17 +53,13 @@ split theo |
 	->hiển thị form ad
 2 bool checkSignup not user->false acc đã có sẵn -> true void signup  insert vào account -> truy cập xem dbtt->"1" or "0"//sign up khong thanh cong
 3 client.close 
-4 query table city& city_info -> false city k hợp lệ->where date_city=date -> chuyển về 1 chuối string phân cách theo |,giữa các
-tp trong row cách theo , 
+4 query table city& city_info -> where date_city=date -> chuyển về 1 chuối string phân cách theo |
 5 check city id ->false city k hợp lệ ->true select * from city_info join city where city_id=id 
 6,7,8 check tồn tại tp hay chưa->insert
-
 truy vaán chuối như đọc file truyền vào 1 string k cần convert qua int ,chuỗi tt :string += and giữ mỗi chuỗi truy vấn theo cột 
 phân cách bởi | để gửi qua cho client
-
-code hàm split chuỗi-> code hàm tổng
 
 gộp về 1 string-> chuyển sang byte gửi lại client
 client tự corvert byte[] sang tring -> phân tách chuối trả về form hiển thị
 
-if mai or mốt code xong k lỗi syntax thì code csdl console c# with sql db các hàm xử lí thử đúng k
+

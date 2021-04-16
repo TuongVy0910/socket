@@ -288,6 +288,7 @@ namespace Server
             clientList.Remove(client);
             client.Close();
         }
+
         string list_all(string date)
         {
             SqlConnection con = new SqlConnection();
@@ -628,6 +629,50 @@ namespace Server
         }
 
 
+
+
+        //string list_all(string date)
+        //{
+        //    SqlConnection con = new SqlConnection();
+        //    connectSQL(con);
+        //    con.Open();
+        //    string result = "";
+        //    try
+        //    {
+        //        string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
+        //            + @date +@"'";
+        //        // Tạo một đối tượng Command.
+        //        SqlCommand cmd = new SqlCommand();
+
+        //        // Liên hợp Command với Connection.
+        //        cmd.Connection = con;
+        //        cmd.CommandText = sql;
+        //        using (DbDataReader reader = cmd.ExecuteReader())
+        //        {
+        //            if (reader.HasRows)
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    result += reader.GetString("_ID");
+        //                }
+        //            }
+
+                    
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+        //    }
+        //    finally
+        //    {
+        //        // Đóng kết nối.
+        //        con.Close();
+        //        // Hủy đối tượng, giải phóng tài nguyên.
+        //        con.Dispose();
+        //    }
+        //}
 
         byte[] Serialize(object obj)
         {
