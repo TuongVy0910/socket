@@ -14,6 +14,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Data.SqlClient;
 using System.Data.Common;
+using System.Data;
+
 
 
 namespace Server
@@ -62,55 +64,9 @@ namespace Server
 
            
         }
-        /*
-        public void listen()
-        {
-            AddMessage("bat dau\n");
-
-            server.Bind(ipe);
-            svMess.Text += "tao bind\n";
-
-            server.Listen(10);
-            svMess.Text += ipe.ToString();
-            svMess.Text += server.ToString();
-
-            while (true)
-            {
-                Socket sk= server.Accept();
-                svMess.Text +="sau khi accept\n";
-
-                clientList.Add(sk);
-                Thread clientProcess = new Thread(myThreadClient);
-                clientProcess.IsBackground = true;
-                clientProcess.Start(sk);
-                
-                svMess.Text += "chayy toi day r ne";
-                //string s = "connected!";
-                //AddMessage(s);
-                svMess.Text+= "connected";
-            }
-        }
-        public void myThreadClient(object obj)
-        {
-            svMess.Text += "chayy toi mythreadclient";
-            svMess.Text += g_count.ToString();
-            g_count++; 
-
-           Socket clientSK = (Socket)obj;
-            //while (true)
-            //{
-            //    byte[] buff = new byte[1024];
-            //    int recv = clientSK.Receive(buff);
-            //    foreach (Socket sk in clientList)
-            //    {
-            //        sk.Send(buff, buff.Length, SocketFlags.None);
-            //    }
-            //}
-        }
-        */
         void AddMessage(string mes)
         {
-            svMess.Items.Add(mes);
+            svMess.Items.Add(mes + @"\n");
 
         }
        //private SqlConnection con;
@@ -165,13 +121,19 @@ namespace Server
         {
         while (true)
         {
-          byte[] recv = new byte[1024 * 4000];
-          client.Receive(recv);
-          string mes = (string)Deserialize(recv);
-                    AddMessage(mes);
-                    string mes1="hello";          //xử lí mes
-          Send(client, mes1);
-          AddMessage(mes1);
+              byte[] recv = new byte[1024 * 4000];
+              client.Receive(recv);
+              string mes = (string)Deserialize(recv);
+              AddMessage(mes );
+              string nameClient = "";
+              string svRep = HandleClientRequest(mes,client,nameClient);
+                    //xử lí mes
+                    AddMessage(svRep );
+                    if (client.Connected)
+                    {
+                        Send(client, svRep);
+                    }
+          
                     //return mes;
                 }
         }
@@ -425,7 +387,7 @@ namespace Server
             }
             return result;
         }
-        bool checkCityID(string id,string name)
+        bool checkCityID(string id)
         {
             SqlConnection con = new SqlConnection();
             connectSQL(con);
@@ -433,7 +395,7 @@ namespace Server
             try
             {
                 string sql = @"SELECT * FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = '"
-                    + @id + @"' and C._NAME = '" + @name + @"'";
+                    + @id + @"'";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
@@ -502,57 +464,168 @@ namespace Server
 
         }
 
-        //void AddCurrentWeather(string row, int i)
-        //{
+        void AddCurrentWeather(string row, int i)
+        {
 
-        //    string[] info= { "" };
-        //    int j=0;
-        //    string[] split = row.Split(',');
-        //    foreach (string s in split)
-        //    {
+            string[] info = { "" };
+            int j = 0;
+            string[] split = row.Split(',');
+            foreach (string s in split)
+            {
 
-        //        if (s.Trim() != "") {
-                
-        //            info[j] = s;
-        //            j++;
-        //        }
+                if (s.Trim() != "")
+                {
+
+                    info[j] = s;
+                    j++;
+                }
+
+
+            }
+            SqlConnection con = new SqlConnection();
+            connectSQL(con);
+            con.Open();
+            try
+            {
+
+                string sql = @"insert into CITY_INFO values (@ID,GETDATE()+"+i.ToString()+@",@temper,@wind,@pressure)";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@ID", info[0]);
+               
+                cmd.Parameters.Add("@temper", SqlDbType.Float).Value = float.Parse(info[1]);
+                cmd.Parameters.Add("@wind", SqlDbType.Float).Value = float.Parse(info[2]);
+                cmd.Parameters.Add("@pressure", SqlDbType.Float).Value = float.Parse(info[3]);
+
+                cmd.CommandType = CommandType.Text;
+                int rowUp = cmd.ExecuteNonQuery();
+                con.Close();
+                AddMessage(rowUp + " Row(s) Inserted ");
+            }
+            catch
+            {
+                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+
+        }
+
+        void Add7daysWeather(string[] rows)
+        {
+            int i = 1;
+            foreach(string s in rows)
+            {
+                AddCurrentWeather(s, i);
+                i++;
+            }
+        }
+        
+        string HandleClientRequest(string mes,Socket client,string name)
+        {
+            string[] split = mes.Split('|');
+            string request = "";
+            switch (int.Parse(split[0]))
+            {
+                case 0:
+                    {
+                        if (checkLogIn(split[1], split[2],"0"))
+                        {
+                            name = split[1];
+                            request = "1|Admin Log in successfully";
+                        }
+                        else
+                            request = "0|Admin Log in unsuccessfully";
+                        break;
+                    }
+                case 1:
+                    {
+                        if (checkLogIn(split[1], split[2], "1"))
+                        {
+                            name = split[1];
+                            request = "1|Client Log in successfully";
+                        }
+                        else
+                            request = "0|Client Log in unsuccessfully";
+                        break;
+                    }
+                case 2:
+                    {
+                        if (checkSignUp(split[1], split[2]))
+                        {
+                            SignUpClient(split[1], split[2]);
+                            request = "1|Sign up successfully";
+                        }
+                        else request = "0|Sign up unsuccessfully";
+                        break;
+                    }
+                case 3:
+                    {
+                        Disconnect(ref client);
+                        request = name + " disconnect!";
+                        break;
+                    }
+                case 4:
+                    {
+                        
+                        request = list_all(split[1]);
+                        break;
+                    }
+                case 5:
+                    {
+                        request = queryCity(split[1], split[2]);
+                        break;
+                    }
+                case 6:
+                    {
+                        if (checkCityID(split[1]))
+                        {
+                            AddCity(split[1], split[2]);
+                            request = "Added city successfully!";
+                        }
+                        else
+                            request = "Added city unsuccessfully!";
+                        break;
+                    }
+                case 7:
+                    {
+                        if (checkCityID(split[1]))
+                        {
+                            AddCurrentWeather(split[2],0);
+                            request = "Added current weather forecast successfully!";
+                        }
+                        else
+                            request = "Added current weather forecast unsuccessfully!";
+                        break;
+                    }
+                case 8:
+                    {
+                        if (checkCityID(split[1]))
+                        {
+                            string[] rows = split[2].Split('-');
+                            Add7daysWeather(rows);
+                            request = "Added 6 days forecast successfully!";
+                        }
+                        else
+                            request = "Added 6 days weather forecast unsuccessfully!";
+                        break;
+                    }
+                default:
+                    {
+                        request = "ERROR!!!";
+                        break;
+                    }
                     
 
-        //    }
-        //    SqlConnection con = new SqlConnection();
-        //    connectSQL(con);
-        //    con.Open();
-        //    try
-        //    {
-
-        //        string sql = "insert into CITY_INFO values (@ID,@date,@temper,@wind,@pressure)";
-        //        // Tạo một đối tượng Command.
-        //        SqlCommand cmd = new SqlCommand(sql, con);
-        //        cmd.Parameters.AddWithValue("@ID", info[0]);
-        //        cmd.Parameters.AddWithValue("@date","getdate()"+ i.ToString());
-        //        cmd.Parameters.AddWithValue("@temper",info[1].flo );
-        //        cmd.Parameters.AddWithValue("@wind",wind );
-        //        cmd.Parameters.AddWithValue("@pressure",pressure );
-
-        //        cmd.CommandType = CommandType.Text;
-        //        int rowUp = cmd.ExecuteNonQuery();
-        //        con.Close();
-        //        AddMessage(rowUp + " Row(s) Inserted ");
-        //    }
-        //    catch
-        //    {
-        //        MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-        //    }
-        //    finally
-        //    {
-        //        // Đóng kết nối.
-        //        con.Close();
-        //        // Hủy đối tượng, giải phóng tài nguyên.
-        //        con.Dispose();
-        //    }
-
-        //}
+            }
+            return request;
+        }
 
 
 
