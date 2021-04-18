@@ -100,8 +100,9 @@ namespace Server
             //}
             //addmessage(j.tostring());
             //AddCurrentWeather("004,31,4.5,0.6,1000", 1);
-
-           
+            string name = "";
+            string a = HandleRequest("5|003|London", ref name);
+            AddMessage(a);
 
         }
         void AddMessage(string mes)
@@ -162,11 +163,11 @@ namespace Server
               byte[] recv = new byte[1024 * 4000];
               client.Receive(recv);
               string mes = (string)Deserialize(recv);
-              AddMessage(mes );
+              AddMessage(mes);
               string nameClient = "";
               string svRep = HandleClientRequest(mes,client,ref nameClient);
                     //xử lí mes
-                    AddMessage(svRep );
+                    AddMessage(svRep);
                     if (client.Connected)
                     {
                         Send(client, svRep);
@@ -330,7 +331,7 @@ namespace Server
             string result = "";
             try
             {
-                string sql = "SELECT _ID,_NAME,WEATHER_DATE,TEMPERATURE,WIND,PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE convert(varchar(10),WEATHER_DATE,103)= @date";
+                string sql = "SELECT _ID,_NAME,WEATHER_DATE,TEMPERATURE,WIND,CLOUDS,PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE convert(varchar(10),WEATHER_DATE,103)= @date";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
@@ -564,6 +565,108 @@ namespace Server
                 AddCurrentWeather(s, i);
                 i++;
             }
+        }
+
+        string HandleRequest(string mes, ref string name)
+        {
+            string[] split = mes.Split('|');
+
+            string request = "";
+            switch (int.Parse(split[0]))
+            {
+                case 0:
+                    {
+                        if (checkLogIn(split[1], split[2], 0))
+                        {
+                            name = split[1];
+                            AddMessage(split[1] + "login !!");
+                            request = "1|Admin " + name + " Log in successfully";
+                        }
+                        else
+                            request = "0|Admin " + name + " Log in unsuccessfully";
+                        break;
+                    }
+                case 1:
+                    {
+                        if (checkLogIn(split[1], split[2], 1))
+                        {
+                            name = split[1];
+                            request = "1|Client " + name + " Log in successfully";
+                        }
+                        else
+                            request = "0|Client " + name + " Log in unsuccessfully";
+                        break;
+                    }
+                case 2:
+                    {
+                        if (!checkSignUp(split[1]))
+                        {
+                            SignUpClient(split[1], split[2]);
+                            request = "1|Sign up successfully";
+                        }
+                        else request = "0|Sign up unsuccessfully";
+                        break;
+                    }
+                //case 3:
+                //    {
+                //        Disconnect(ref client);
+                //        request = name + " disconnect!";
+                //        break;
+                //    }
+                case 4:
+                    {
+
+                        request = list_all(split[1]);
+                        break;
+                    }
+                case 5:
+                    {
+                        request = queryCity(split[1], split[2]);
+                        break;
+                    }
+                case 6:
+                    {
+                        if (!checkCityID(split[1]))
+                        {
+                            AddCity(split[1], split[2]);
+                            request = "Added city successfully!";
+                        }
+                        else
+                            request = "Added city unsuccessfully!";
+                        break;
+                    }
+                case 7:
+                    {
+                        if (checkCityID(split[1]))
+                        {
+                            AddCurrentWeather(split[2], 0);
+                            request = "Added current weather forecast successfully!";
+                        }
+                        else
+                            request = "Added current weather forecast unsuccessfully!";
+                        break;
+                    }
+                case 8:
+                    {
+                        if (checkCityID(split[1]))
+                        {
+                            string[] rows = split[2].Split('-');
+                            Add7daysWeather(rows);
+                            request = "Added 6 days forecast successfully!";
+                        }
+                        else
+                            request = "Added 6 days weather forecast unsuccessfully!";
+                        break;
+                    }
+                default:
+                    {
+                        request = "ERROR!!!";
+                        break;
+                    }
+
+
+            }
+            return request;
         }
 
         string HandleClientRequest(string mes, Socket client, ref string name)
