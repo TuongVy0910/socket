@@ -80,12 +80,30 @@ namespace Server
             //            else
             //                request = "0|Admin Log in unsuccessfully";
             //AddMessage(request);
-            string d = "2020-11-16";
-            string sql = @" WHERE CI.WEATHER_DATE = '" + @d + "'";
-            
-            AddMessage(sql);
-                    
-            }
+            //AddCity("004", "BinhDinh");
+            //string row = "004,32,4.4,0.2,999";
+
+            //string[] info = { "" };
+            //int j = 0;
+            //string[] split = row.split(',');
+            //foreach (string s in split)
+            //{
+
+            //    if (s.trim() != "")
+            //    {
+            //        split[j] = s;
+            //        addmessage(split[j]);
+            //        j++;
+            //    }
+
+
+            //}
+            //addmessage(j.tostring());
+            AddCurrentWeather("004,31,4.5,0.6,1000", 1);
+
+           
+
+        }
         void AddMessage(string mes)
         {
             svMess.Items.Add(mes);
@@ -93,8 +111,6 @@ namespace Server
         }
        //private SqlConnection con;
         
-
-
         void Connect(int n)
     {
                 GetIP();
@@ -148,7 +164,7 @@ namespace Server
               string mes = (string)Deserialize(recv);
               AddMessage(mes );
               string nameClient = "";
-              string svRep = HandleClientRequest(mes,client,nameClient);
+              string svRep = HandleClientRequest(mes,client,ref nameClient);
                     //xử lí mes
                     AddMessage(svRep );
                     if (client.Connected)
@@ -176,11 +192,11 @@ namespace Server
                 SqlConnection conn = new SqlConnection(conString);
                 // con.Open();
                 con = conn;
-                MessageBox.Show("Kết nối SQL thành công", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Connect to SQL successfully", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch
             {
-                MessageBox.Show("Không Kết nối tới CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not connect to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }
@@ -314,14 +330,14 @@ namespace Server
             string result = "";
             try
             {
-                string sql = "SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"+@date+"'";
+                string sql = "SELECT _ID,_NAME,WEATHER_DATE,TEMPERATURE,WIND,PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE convert(varchar(10),WEATHER_DATE,103)= @date";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
-                cmd.Parameters.Add("@date", SqlDbType.Date).Value = DateTime.Parse(date).d;
+                cmd.Parameters.AddWithValue("@date", date);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -330,13 +346,14 @@ namespace Server
                         {
 
 
-                            string ID = reader["_ID"].ToString();
+                            string ID = reader["_ID"].ToString().Trim();
                             string name = reader["_NAME"].ToString();
                             string d = reader["WEATHER_DATE"].ToString();
                             string temperature = reader["TEMPERATURE"].ToString();
                             string wind = reader["WIND"].ToString();
+                            string clouds = reader["CLOUDS"].ToString();
                             string pressure = reader["PRESSURE"].ToString();
-                            result += ID + "," + name + "," + d + "," + temperature + "," + wind + "," + pressure + "|";
+                            result += ID + "," + name + "," + d + "," + temperature + "," + wind+","+clouds + "," + pressure + "|";
                         }
                     }
                 }
@@ -365,7 +382,7 @@ namespace Server
             string result = "";
             try
             {
-                string sql = "SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE C._ID = @id and _NAME = @namecity";
+                string sql = "SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CLOUDS,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE _ID = @id and _NAME = @namecity";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
@@ -380,13 +397,14 @@ namespace Server
                     {
                         while (reader.Read())
                         {
-                            string ID = reader["_ID"].ToString();
+                            string ID = reader["_ID"].ToString().Trim();
                             string CityName = reader["_NAME"].ToString();
                             string d = reader["WEATHER_DATE"].ToString();
                             string temperature = reader["TEMPERATURE"].ToString();
                             string wind = reader["WIND"].ToString();
+                            string clouds = reader["CLOUDS"].ToString();
                             string pressure = reader["PRESSURE"].ToString();
-                            result += ID + "," + CityName + "," + d + "," + temperature + "," + wind + "," + pressure + "|";
+                            result += ID + "," + name + "," + d + "," + temperature + "," + wind + "," + clouds + "," + pressure + "|";
                         }
                     }
                 }
@@ -394,7 +412,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 result += "ERROR";
             }
             finally
@@ -413,7 +431,7 @@ namespace Server
             con.Open();
             try
             {
-                string sql = @"SELECT * FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = @id ";
+                string sql = "SELECT * FROM CITY   WHERE _ID = @id ";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
@@ -445,7 +463,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
@@ -458,12 +476,12 @@ namespace Server
             try
             {
 
-                string sql = "insert into CITY values (@ID,@CityName,@type)";
+                string sql = "insert into CITY values (@ID,@CityName)";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@ID", id);
                 cmd.Parameters.AddWithValue("@CityName", name);
-               
+
                 cmd.CommandType = CommandType.Text;
                 int i = cmd.ExecuteNonQuery();
                 con.Close();
@@ -471,8 +489,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -480,6 +497,7 @@ namespace Server
                 con.Close();
                 // Hủy đối tượng, giải phóng tài nguyên.
                 con.Dispose();
+
             }
 
         }
@@ -487,7 +505,7 @@ namespace Server
         void AddCurrentWeather(string row, int i)
         {
 
-            string[] info = { "" };
+            
             int j = 0;
             string[] split = row.Split(',');
             foreach (string s in split)
@@ -496,7 +514,7 @@ namespace Server
                 if (s.Trim() != "")
                 {
 
-                    info[j] = s;
+                    split[j] = s;
                     j++;
                 }
 
@@ -508,14 +526,15 @@ namespace Server
             try
             {
 
-                string sql = @"insert into CITY_INFO values (@ID,GETDATE()+"+i.ToString()+@",@temper,@wind,@pressure)";
+                string sql = "insert into CITY_INFO values (@ID,GETDATE()+ @i,@temper,@wind,@cloud,@pressure)";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand(sql, con);
-                cmd.Parameters.AddWithValue("@ID", info[0]);
-               
-                cmd.Parameters.Add("@temper", SqlDbType.Float).Value = float.Parse(info[1]);
-                cmd.Parameters.Add("@wind", SqlDbType.Float).Value = float.Parse(info[2]);
-                cmd.Parameters.Add("@pressure", SqlDbType.Float).Value = float.Parse(info[3]);
+                cmd.Parameters.AddWithValue("@ID", split[0]);
+                cmd.Parameters.Add("@i", SqlDbType.Int).Value = i;
+                cmd.Parameters.Add("@temper", SqlDbType.Float).Value = float.Parse(split[1]);
+                cmd.Parameters.Add("@wind", SqlDbType.Float).Value = float.Parse(split[2]);
+                cmd.Parameters.Add("@cloud", SqlDbType.Float).Value = float.Parse(split[3]);
+                cmd.Parameters.Add("@pressure", SqlDbType.Float).Value = float.Parse(split[4]);
 
                 cmd.CommandType = CommandType.Text;
                 int rowUp = cmd.ExecuteNonQuery();
@@ -524,7 +543,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
             finally
@@ -546,24 +565,24 @@ namespace Server
                 i++;
             }
         }
-        
-        string HandleClientRequest(string mes,Socket client,string name)
+
+        string HandleClientRequest(string mes, Socket client, ref string name)
         {
             string[] split = mes.Split('|');
-            
+
             string request = "";
             switch (int.Parse(split[0]))
             {
                 case 0:
                     {
-                        if (checkLogIn(split[1], split[2],0))
+                        if (checkLogIn(split[1], split[2], 0))
                         {
                             name = split[1];
                             AddMessage(split[1] + "login !!");
-                            request = "1|Admin Log in successfully";
+                            request = "1|Admin " + name + " Log in successfully";
                         }
                         else
-                            request = "0|Admin Log in unsuccessfully";
+                            request = "0|Admin " + name + " Log in unsuccessfully";
                         break;
                     }
                 case 1:
@@ -571,10 +590,10 @@ namespace Server
                         if (checkLogIn(split[1], split[2], 1))
                         {
                             name = split[1];
-                            request = "1|Client Log in successfully";
+                            request = "1|Client " + name + " Log in successfully";
                         }
                         else
-                            request = "0|Client Log in unsuccessfully";
+                            request = "0|Client " + name + " Log in unsuccessfully";
                         break;
                     }
                 case 2:
@@ -595,7 +614,7 @@ namespace Server
                     }
                 case 4:
                     {
-                        
+
                         request = list_all(split[1]);
                         break;
                     }
@@ -619,7 +638,7 @@ namespace Server
                     {
                         if (checkCityID(split[1]))
                         {
-                            AddCurrentWeather(split[2],0);
+                            AddCurrentWeather(split[2], 0);
                             request = "Added current weather forecast successfully!";
                         }
                         else
@@ -643,57 +662,11 @@ namespace Server
                         request = "ERROR!!!";
                         break;
                     }
-                    
+
 
             }
             return request;
         }
-
-
-
-
-        //string list_all(string date)
-        //{
-        //    SqlConnection con = new SqlConnection();
-        //    connectSQL(con);
-        //    con.Open();
-        //    string result = "";
-        //    try
-        //    {
-        //        string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"
-        //            + @date +@"'";
-        //        // Tạo một đối tượng Command.
-        //        SqlCommand cmd = new SqlCommand();
-
-        //        // Liên hợp Command với Connection.
-        //        cmd.Connection = con;
-        //        cmd.CommandText = sql;
-        //        using (DbDataReader reader = cmd.ExecuteReader())
-        //        {
-        //            if (reader.HasRows)
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    result += reader.GetString("_ID");
-        //                }
-        //            }
-
-                    
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-        //    }
-        //    finally
-        //    {
-        //        // Đóng kết nối.
-        //        con.Close();
-        //        // Hủy đối tượng, giải phóng tài nguyên.
-        //        con.Dispose();
-        //    }
-        //}
 
         byte[] Serialize(object obj)
         {
@@ -702,6 +675,7 @@ namespace Server
         formatter.Serialize(stream, obj);
         return stream.ToArray();
         }
+
         object Deserialize(byte[] data)
         {
         MemoryStream stream = new MemoryStream(data);
