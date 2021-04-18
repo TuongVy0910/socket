@@ -100,9 +100,9 @@ namespace Server
             //}
             //addmessage(j.tostring());
             //AddCurrentWeather("004,31,4.5,0.6,1000", 1);
-            string name = "";
-            string a = HandleRequest("5|003|London", ref name);
-            AddMessage(a);
+            //string name = "";
+            //string a = HandleRequest("5|003|London", ref name);
+            //AddMessage(a);
 
         }
         void AddMessage(string mes)
