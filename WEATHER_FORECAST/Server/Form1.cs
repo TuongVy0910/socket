@@ -68,10 +68,10 @@ namespace Server
             //    AddMessage(s);
             //}
 
-            
+
 
             //string request = "";
-           
+
             //            if (checkLogIn(split[1], split[2], 0))
             //            {
 
@@ -80,8 +80,10 @@ namespace Server
             //            else
             //                request = "0|Admin Log in unsuccessfully";
             //AddMessage(request);
-
-
+            string d = "2020-11-16";
+            string sql = @" WHERE CI.WEATHER_DATE = '" + @d + "'";
+            
+            AddMessage(sql);
                     
             }
         void AddMessage(string mes)
@@ -228,7 +230,7 @@ namespace Server
             }
 
         }
-        bool checkSignUp(string user, string pw)
+        bool checkSignUp(string user)
         {
             SqlConnection con = new SqlConnection();
             connectSQL(ref con);
@@ -237,11 +239,8 @@ namespace Server
             {
                 string sql = "SELECT * FROM ACCOUNT WHERE _username = @user";
                 // Tạo một đối tượng Command.
-                SqlCommand cmd = new SqlCommand();
+                SqlCommand cmd = new SqlCommand(sql,con);
 
-                // Liên hợp Command với Connection.
-                cmd.Connection = con;
-                cmd.CommandText = sql;
                 cmd.Parameters.AddWithValue("@user", user);
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
@@ -285,10 +284,11 @@ namespace Server
                 SqlCommand cmd = new SqlCommand(sql, con);
                 cmd.Parameters.AddWithValue("@username", user);
                 cmd.Parameters.AddWithValue("@password", pw);
-                cmd.Parameters.AddWithValue("@type", 0);
+                cmd.Parameters.Add("@type", SqlDbType.Int).Value = 1;
                 cmd.CommandType = CommandType.Text;
                 int i = cmd.ExecuteNonQuery();
                 con.Close();
+                con.Dispose();
                 AddMessage(i + " Row(s) Inserted ");
             }
             catch
@@ -296,13 +296,7 @@ namespace Server
                 MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
-            finally
-            {
-                // Đóng kết nối.
-                con.Close();
-                // Hủy đối tượng, giải phóng tài nguyên.
-                con.Dispose();
-            }
+            
 
         }
 
@@ -320,14 +314,14 @@ namespace Server
             string result = "";
             try
             {
-                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE =  @date ";
+                string sql = "SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI.WEATHER_DATE = '"+@date+"'";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
                 // Liên hợp Command với Connection.
                 cmd.Connection = con;
                 cmd.CommandText = sql;
-                cmd.Parameters.Add("@date", SqlDbType.Date).Value = DateTime.Parse(date);
+                cmd.Parameters.Add("@date", SqlDbType.Date).Value = DateTime.Parse(date).d;
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -371,7 +365,7 @@ namespace Server
             string result = "";
             try
             {
-                string sql = @"SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE CI._ID = @id and _NAME = @namecity";
+                string sql = "SELECT C._ID,C._NAME,CI.WEATHER_DATE,CI.TEMPERATURE,CI.WIND,CI.PRESSURE FROM CITY C JOIN CITY_INFO CI ON C._ID = CI.CITY_ID  WHERE C._ID = @id and _NAME = @namecity";
                 // Tạo một đối tượng Command.
                 SqlCommand cmd = new SqlCommand();
 
@@ -565,6 +559,7 @@ namespace Server
                         if (checkLogIn(split[1], split[2],0))
                         {
                             name = split[1];
+                            AddMessage(split[1] + "login !!");
                             request = "1|Admin Log in successfully";
                         }
                         else
@@ -584,7 +579,7 @@ namespace Server
                     }
                 case 2:
                     {
-                        if (checkSignUp(split[1], split[2]))
+                        if (!checkSignUp(split[1]))
                         {
                             SignUpClient(split[1], split[2]);
                             request = "1|Sign up successfully";
@@ -611,7 +606,7 @@ namespace Server
                     }
                 case 6:
                     {
-                        if (checkCityID(split[1]))
+                        if (!checkCityID(split[1]))
                         {
                             AddCity(split[1], split[2]);
                             request = "Added city successfully!";
