@@ -152,7 +152,7 @@ namespace Server
             client.Send(Serialize(mes));
         }
 
-        void Recieve(object obj)
+        void Recieve( object obj)
         {
         Socket client = obj as Socket;
 
@@ -165,7 +165,7 @@ namespace Server
               string mes = (string)Deserialize(recv);
               AddMessage(mes);
               string nameClient = "";
-              string svRep = HandleClientRequest(mes,client,ref nameClient);
+              string svRep = HandleClientRequest(mes,ref client,ref nameClient);
                     //xử lí mes
                     AddMessage(svRep);
                     if (client.Connected)
@@ -669,7 +669,7 @@ namespace Server
             return request;
         }
 
-        string HandleClientRequest(string mes, Socket client, ref string name)
+        string HandleClientRequest(string mes,ref Socket client, ref string name)
         {
             string[] split = mes.Split('|');
 
