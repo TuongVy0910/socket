@@ -99,7 +99,7 @@ namespace Server
 
             //}
             //addmessage(j.tostring());
-            AddCurrentWeather("004,31,4.5,0.6,1000", 1);
+            //AddCurrentWeather("004,31,4.5,0.6,1000", 1);
 
            
 
