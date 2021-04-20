@@ -163,11 +163,21 @@ namespace Server
               byte[] recv = new byte[1024 * 4000];
               client.Receive(recv);
               string mes = (string)Deserialize(recv);
-              AddMessage(mes);
-              string nameClient = "";
+                    string nameClient = "";
+                    AddMessage(nameClient+ " : " +mes);
+             
               string svRep = HandleClientRequest(mes,ref client,ref nameClient);
                     //xử lí mes
-                    AddMessage(svRep);
+                    string[] row = svRep.Split('|');
+                    if(svRep!= "")
+                    {
+                        AddMessage("Server reply client: " + nameClient);
+                    }
+                    foreach(string s in row)
+                    {
+                        AddMessage(s);
+                    }
+                    //AddMessage(svRep);
                     if (client.Connected)
                     {
                         Send(client, svRep);
@@ -242,7 +252,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -282,7 +292,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -310,7 +320,7 @@ namespace Server
             }
             catch
             {
-                MessageBox.Show("Không truy van toi CSDL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
             }
             
@@ -718,12 +728,12 @@ namespace Server
                 case 4:
                     {
 
-                        request = list_all(split[1]);
+                        request ="Client "+name+" query: "+ list_all(split[1]);
                         break;
                     }
                 case 5:
                     {
-                        request = queryCity(split[1], split[2]);
+                        request = "Client " + name + " query: " + queryCity(split[1], split[2]);
                         break;
                     }
                 case 6:
@@ -731,10 +741,10 @@ namespace Server
                         if (!checkCityID(split[1]))
                         {
                             AddCity(split[1], split[2]);
-                            request = "Added city successfully!";
+                            request ="Admin added city successfully!";
                         }
                         else
-                            request = "Added city unsuccessfully!";
+                            request = "Admin added city unsuccessfully!";
                         break;
                     }
                 case 7:
@@ -742,10 +752,10 @@ namespace Server
                         if (checkCityID(split[1]))
                         {
                             AddCurrentWeather(split[2], 0);
-                            request = "Added current weather forecast successfully!";
+                            request = "Admin added current weather forecast successfully!";
                         }
                         else
-                            request = "Added current weather forecast unsuccessfully!";
+                            request = "Admin added current weather forecast unsuccessfully!";
                         break;
                     }
                 case 8:
@@ -754,10 +764,10 @@ namespace Server
                         {
                             string[] rows = split[2].Split('-');
                             Add7daysWeather(rows);
-                            request = "Added 6 days forecast successfully!";
+                            request = "Admin added 6 days forecast successfully!";
                         }
                         else
-                            request = "Added 6 days weather forecast unsuccessfully!";
+                            request = "Admin added 6 days weather forecast unsuccessfully!";
                         break;
                     }
                 default:
