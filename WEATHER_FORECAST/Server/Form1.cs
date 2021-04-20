@@ -14,8 +14,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Data.SqlClient;
 using System.Data.Common;
-using System.Data;
-
 
 
 namespace Server
@@ -32,9 +30,8 @@ namespace Server
         IPEndPoint ipe;
         Socket server;
         List<Socket> clientList=new List<Socket>();
-        
+
         string myIP = "";
-        int g_count = 0;
     
         private void SERVER_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -60,91 +57,44 @@ namespace Server
         
         private void SERVER_Load(object sender, EventArgs e)
         {
-            //string mes = @"1|yioccho|12345";
-            //AddMessage(mes);
-            //string[] split = mes.Split('|');
-            //foreach (string s in split)
-            //{
-            //    AddMessage(s);
-            //}
-
-
-
-            //string request = "";
-
-            //            if (checkLogIn(split[1], split[2], 0))
-            //            {
-
-            //                request = "1|Admin Log in successfully";
-            //            }
-            //            else
-            //                request = "0|Admin Log in unsuccessfully";
-            //AddMessage(request);
-            //AddCity("004", "BinhDinh");
-            //string row = "004,32,4.4,0.2,999";
-
-            //string[] info = { "" };
-            //int j = 0;
-            //string[] split = row.split(',');
-            //foreach (string s in split)
-            //{
-
-            //    if (s.trim() != "")
-            //    {
-            //        split[j] = s;
-            //        addmessage(split[j]);
-            //        j++;
-            //    }
-
-
-            //}
-            //addmessage(j.tostring());
-            //AddCurrentWeather("004,31,4.5,0.6,1000", 1);
-            //string name = "";
-            //string a = HandleRequest("5|003|London", ref name);
-            //AddMessage(a);
-
+            
         }
         void AddMessage(string mes)
         {
             svMess.Items.Add(mes);
 
         }
-       //private SqlConnection con;
         
         void Connect(int n)
     {
                 GetIP();
-    //ipe = new IPEndPoint(IPAddress.Parse("172.16.1.48"), 62000);
-    clientList = new List<Socket>();
-    //server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-    server.Bind(ipe);
-    //server.Listen(100);
-    //Socket client = server.Accept();
-    //AddMessage("Client connected!");
 
+            clientList = new List<Socket>();
+ 
+            server.Bind(ipe);
+   
 
-    Thread Listen = new Thread(() => {
-    try
-    {
-      while (true)
-      {
-          server.Listen(n);
-          Socket client = server.Accept();
-          clientList.Add(client);
-          Thread recieve = new Thread(Recieve);
-          recieve.IsBackground = true;
-          recieve.Start(client);
-          AddMessage("Client connected!");
-      }
-    }
-    catch
-    {
-            GetIP();
-    }
-    });
-    Listen.IsBackground = true;
-    Listen.Start();
+            Thread Listen = new Thread(() => {
+            try
+            {
+              while (true)
+              {
+                  server.Listen(n);
+                  Socket client = server.Accept();
+                  clientList.Add(client);
+                  Thread recieve = new Thread(Recieve);
+                  recieve.IsBackground = true;
+                  recieve.Start(client);
+                  AddMessage("Client connected!");
+              }
+            }
+            catch
+            {
+                    GetIP();
+            }
+            });
+            Listen.IsBackground = true;
+            Listen.Start();
 
     }
         void Send(Socket client,string mes)
@@ -183,14 +133,13 @@ namespace Server
                         Send(client, svRep);
                     }
           
-                    //return mes;
                 }
         }
         catch
         {
         clientList.Remove(client);
         client.Close();
-               // return "exists";
+             
         }
 
         }
@@ -227,8 +176,7 @@ namespace Server
                 cmd.Parameters.AddWithValue("@password", pw);
                 cmd.Parameters.Add("@typeacc", SqlDbType.Int).Value = type;
                 // Liên hợp Command với Connection.
-                //cmd.Connection = con;
-                //cmd.CommandText = sql;
+                
                 using (DbDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
@@ -575,108 +523,6 @@ namespace Server
                 AddCurrentWeather(s, i);
                 i++;
             }
-        }
-
-        string HandleRequest(string mes, ref string name)
-        {
-            string[] split = mes.Split('|');
-
-            string request = "";
-            switch (int.Parse(split[0]))
-            {
-                case 0:
-                    {
-                        if (checkLogIn(split[1], split[2], 0))
-                        {
-                            name = split[1];
-                            AddMessage(split[1] + "login !!");
-                            request = "1|Admin " + name + " Log in successfully";
-                        }
-                        else
-                            request = "0|Admin " + name + " Log in unsuccessfully";
-                        break;
-                    }
-                case 1:
-                    {
-                        if (checkLogIn(split[1], split[2], 1))
-                        {
-                            name = split[1];
-                            request = "1|Client " + name + " Log in successfully";
-                        }
-                        else
-                            request = "0|Client " + name + " Log in unsuccessfully";
-                        break;
-                    }
-                case 2:
-                    {
-                        if (!checkSignUp(split[1]))
-                        {
-                            SignUpClient(split[1], split[2]);
-                            request = "1|Sign up successfully";
-                        }
-                        else request = "0|Sign up unsuccessfully";
-                        break;
-                    }
-                //case 3:
-                //    {
-                //        Disconnect(ref client);
-                //        request = name + " disconnect!";
-                //        break;
-                //    }
-                case 4:
-                    {
-
-                        request = list_all(split[1]);
-                        break;
-                    }
-                case 5:
-                    {
-                        request = queryCity(split[1], split[2]);
-                        break;
-                    }
-                case 6:
-                    {
-                        if (!checkCityID(split[1]))
-                        {
-                            AddCity(split[1], split[2]);
-                            request = "Added city successfully!";
-                        }
-                        else
-                            request = "Added city unsuccessfully!";
-                        break;
-                    }
-                case 7:
-                    {
-                        if (checkCityID(split[1]))
-                        {
-                            AddCurrentWeather(split[2], 0);
-                            request = "Added current weather forecast successfully!";
-                        }
-                        else
-                            request = "Added current weather forecast unsuccessfully!";
-                        break;
-                    }
-                case 8:
-                    {
-                        if (checkCityID(split[1]))
-                        {
-                            string[] rows = split[2].Split('-');
-                            Add7daysWeather(rows);
-                            request = "Added 6 days forecast successfully!";
-                        }
-                        else
-                            request = "Added 6 days weather forecast unsuccessfully!";
-                        break;
-                    }
-                default:
-                    {
-                        request = "ERROR!!!";
-                        break;
-                    }
-
-
-            }
-            return request;
         }
 
         string HandleClientRequest(string mes,ref Socket client, ref string name)
