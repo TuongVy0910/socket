@@ -127,6 +127,7 @@ namespace Server
                     {
                         AddMessage(s);
                     }
+
                     //AddMessage(svRep);
                     if (client.Connected)
                     {
