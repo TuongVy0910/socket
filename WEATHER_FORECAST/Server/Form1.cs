@@ -57,7 +57,12 @@ namespace Server
         
         private void SERVER_Load(object sender, EventArgs e)
         {
-            
+            //string[] sp = "003;13;4;0,2;900".Split(';');
+            //foreach (string s in sp)
+            //{
+            //    AddMessage(s);
+            //}
+            //AddCurrentWeather("001;33;4.5;0.2;900", 4);
         }
         void AddMessage(string mes)
         {
