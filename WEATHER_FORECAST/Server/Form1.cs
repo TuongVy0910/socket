@@ -574,12 +574,12 @@ namespace Server
                 case 4:
                     {
 
-                        request ="Client "+name+" query: "+ list_all(split[1]);
+                        request =list_all(split[1]);
                         break;
                     }
                 case 5:
                     {
-                        request = "Client " + name + " query: " + queryCity(split[1], split[2]);
+                        request =queryCity(split[1], split[2]);
                         break;
                     }
                 case 6:
