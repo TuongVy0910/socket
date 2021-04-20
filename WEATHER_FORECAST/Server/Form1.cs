@@ -127,6 +127,7 @@ namespace Server
                     {
                         AddMessage(s);
                     }
+
                     //AddMessage(svRep);
                     if (client.Connected)
                     {
@@ -312,7 +313,7 @@ namespace Server
                             string wind = reader["WIND"].ToString();
                             string clouds = reader["CLOUDS"].ToString();
                             string pressure = reader["PRESSURE"].ToString();
-                            result += ID + "," + name + "," + d + "," + temperature + "," + wind+","+clouds + "," + pressure + "|";
+                            result += ID + ";" + name + ";" + d + ";" + temperature + "C degree ; " + wind+" km/h; "+clouds + " (clouds); " + pressure + " hPA |";
                         }
                     }
                 }
@@ -363,7 +364,7 @@ namespace Server
                             string wind = reader["WIND"].ToString();
                             string clouds = reader["CLOUDS"].ToString();
                             string pressure = reader["PRESSURE"].ToString();
-                            result += ID + "," + name + "," + d + "," + temperature + "," + wind + "," + clouds + "," + pressure + "|";
+                            result += ID + ";" + name + ";" + d + ";" + temperature + "C degree ; " + wind + " km/h; " + clouds + " (clouds); " + pressure + " hPA |";
                         }
                     }
                 }
@@ -466,7 +467,7 @@ namespace Server
 
             
             int j = 0;
-            string[] split = row.Split(',');
+            string[] split = row.Split(';');
             foreach (string s in split)
             {
 
@@ -574,12 +575,12 @@ namespace Server
                 case 4:
                     {
 
-                        request ="Client "+name+" query: "+ list_all(split[1]);
+                        request =list_all(split[1]);
                         break;
                     }
                 case 5:
                     {
-                        request = "Client " + name + " query: " + queryCity(split[1], split[2]);
+                        request =queryCity(split[1], split[2]);
                         break;
                     }
                 case 6:
