@@ -62,7 +62,12 @@ namespace Server
             //{
             //    AddMessage(s);
             //}
-            //AddCurrentWeather("001;33;4.5;0.2;900", 4);
+            //AddCurrentWeather("001;33;4.5;0.2;900", 0);
+            //if (checkDate(0))
+            //{
+            //    UpdateWeather("001;35;4.5;0.2;900", 0);
+            //}
+            //else AddCurrentWeather("001;35;4.5;0.2;900", 0);
         }
         void AddMessage(string mes)
         {
@@ -338,7 +343,49 @@ namespace Server
             }
             return result;
         }
+        bool checkDate(int i)
+        {
+            SqlConnection con = new SqlConnection();
+            connectSQL(ref con);
+            con.Open();
+            try
+            {
+                string sql = "SELECT * FROM CITY_INFO   WHERE convert(varchar(25),weather_date,103)=convert(varchar(25),getdate() + @i,103) ";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand();
 
+                // Liên hợp Command với Connection.
+                cmd.Connection = con;
+                cmd.CommandText = sql;
+
+                cmd.Parameters.Add("@i", SqlDbType.Int).Value = i;
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return true;
+                    }
+
+                    else
+                    {
+                        // Đóng kết nối.
+                        con.Close();
+                        // Hủy đối tượng, giải phóng tài nguyên.
+                        con.Dispose();
+                        return false;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
         string queryCity(string id,string name)
         {
             SqlConnection con = new SqlConnection();
@@ -521,12 +568,67 @@ namespace Server
 
         }
 
+        void UpdateWeather(string row,int i)
+        {
+            int j = 0;
+            string[] split = row.Split(';');
+            foreach (string s in split)
+            {
+
+                if (s.Trim() != "")
+                {
+
+                    split[j] = s;
+                    j++;
+                }
+
+
+            }
+            SqlConnection con = new SqlConnection();
+            connectSQL(ref con);
+            con.Open();
+            try
+            {
+
+                string sql = "update CITY_INFO set TEMPERATURE= @temper,WIND = @wind,CLOUDS = @cloud,PRESSURE= @pressure WHERE convert(varchar(25),weather_date,103)=convert(varchar(25),getdate() +@i,103)  and city_id= @id ;";
+                // Tạo một đối tượng Command.
+                SqlCommand cmd = new SqlCommand(sql, con);
+                
+                
+                cmd.Parameters.Add("@temper", SqlDbType.Float).Value = float.Parse(split[1]);
+                cmd.Parameters.Add("@wind", SqlDbType.Float).Value = float.Parse(split[2]);
+                cmd.Parameters.Add("@cloud", SqlDbType.Float).Value = float.Parse(split[3]);
+                cmd.Parameters.Add("@pressure", SqlDbType.Float).Value = float.Parse(split[4]);
+                cmd.Parameters.Add("@i", SqlDbType.Int).Value = i;
+                cmd.Parameters.AddWithValue("@id", split[0]);
+                cmd.CommandType = CommandType.Text;
+                int rowUp = cmd.ExecuteNonQuery();
+                con.Close();
+                AddMessage(rowUp + " Row(s) Updated ");
+            }
+            catch
+            {
+                MessageBox.Show("Can not query to SQL", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+            finally
+            {
+                // Đóng kết nối.
+                con.Close();
+                // Hủy đối tượng, giải phóng tài nguyên.
+                con.Dispose();
+            }
+        }
         void Add7daysWeather(string[] rows)
         {
             int i = 1;
             foreach(string s in rows)
             {
-                AddCurrentWeather(s, i);
+                if (checkDate(i))
+                {
+                    UpdateWeather(s, i);
+                }
+                else AddCurrentWeather(s, i);
                 i++;
             }
         }
@@ -603,7 +705,11 @@ namespace Server
                     {
                         if (checkCityID(split[1]))
                         {
-                            AddCurrentWeather(split[2], 0);
+                            if (checkDate(0))
+                            {
+                                UpdateWeather(split[2], 0);
+                            }
+                            else AddCurrentWeather(split[2], 0);
                             request = "Admin added current weather forecast successfully!";
                         }
                         else
