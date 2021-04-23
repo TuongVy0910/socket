@@ -35,6 +35,10 @@ namespace Server
     
         private void SERVER_FormClosed(object sender, FormClosedEventArgs e)
         {
+            foreach (Socket s in clientList)
+            {
+                Send(s, "Server disconnect!");
+            }
             close();
             this.close();
         }
