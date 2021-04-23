@@ -36,6 +36,7 @@ namespace Server
         private void SERVER_FormClosed(object sender, FormClosedEventArgs e)
         {
             close();
+            this.close();
         }
         public void GetIP()
         {
@@ -695,10 +696,10 @@ namespace Server
                         if (!checkCityID(split[1]))
                         {
                             AddCity(split[1], split[2]);
-                            request ="Admin added city successfully!";
+                            request ="1|Admin added city successfully!";
                         }
                         else
-                            request = "Admin added city unsuccessfully!";
+                            request = "0|Admin added city unsuccessfully!";
                         break;
                     }
                 case 7:
@@ -710,10 +711,10 @@ namespace Server
                                 UpdateWeather(split[2], 0);
                             }
                             else AddCurrentWeather(split[2], 0);
-                            request = "Admin added current weather forecast successfully!";
+                            request = "1|Admin added current weather forecast successfully!";
                         }
                         else
-                            request = "Admin added current weather forecast unsuccessfully!";
+                            request = "0|Admin added current weather forecast unsuccessfully!";
                         break;
                     }
                 case 8:
@@ -722,15 +723,15 @@ namespace Server
                         {
                             string[] rows = split[2].Split('-');
                             Add7daysWeather(rows);
-                            request = "Admin added 6 days forecast successfully!";
+                            request = "1|Admin added 7 days forecast successfully!";
                         }
                         else
-                            request = "Admin added 6 days weather forecast unsuccessfully!";
+                            request = "0|Admin added 7 days weather forecast unsuccessfully!";
                         break;
                     }
                 default:
                     {
-                        request = "ERROR!!!";
+                        request = "-1|ERROR!!!";
                         break;
                     }
 
@@ -771,6 +772,8 @@ namespace Server
             }
             AddMessage("Server disconnect!");
             close();
+            this.close();
+
         }
     }
 }
