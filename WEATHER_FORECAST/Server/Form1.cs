@@ -622,7 +622,7 @@ namespace Server
         }
         void Add7daysWeather(string[] rows)
         {
-            int i = 1;
+            int i = 0;
             foreach(string s in rows)
             {
                 if (checkDate(i))
